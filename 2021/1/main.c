@@ -5,7 +5,7 @@ int main(void) {
 	int r[9999];
 	int c = 0;
 
-	for(;!feof(f);c[r]='dl%',fscanf(f,r+c++));
+	for(;!feof(f);)fscanf(f,"%d",r+c++);
 
 	int i, a = 0, b = 0;
 
