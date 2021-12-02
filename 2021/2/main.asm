@@ -1,116 +1,183 @@
-; assembler: nasm -felf64 main.asm -o main.o
-; compiler un stub C (fichier vide): cc -c stub.c -o stub.o
-; link: cc main.o stub.o -o main
+; assemble: nasm -felf64 main.asm -o main.o
+; link: ld main.o
 
-global main
+global _start
 default rel
-
-extern fopen ; oue bon faut pas exagérer non plus, j'allais pas faire tout avec des syscalls
-extern fclose
-extern feof
-extern fscanf
-extern printf
 
 section .data
 
 	path: db "input", 0
-	mode: db "rb", 0
-	fmt: db "%s %d", 0
-	part1: db "part 1 %d", 0xA, 0
+	prefix: db "part 1 "
+	nl: db 0xA
 
 section .bss
 
-	fp: resq 1 ; qword pcq on met 'rax' dedans
-	a: resb 32 ; assez
-	n: resd 1
+	fd: resq 1 ; qword bc we're putting 'rax' inside
+	buf: resb 1
+	act: resb 1
+	num: resd 1
+	unit: resq 1 ; qword bc we're using a special trick for dividing by 10
 	x: resd 1
 	y: resd 1
 
 section .text
 
-main:
-	; fopen(path, mode)
+read_byte:
+	; read(fd, &a, 1)
 
-	push rbp
+	mov rdi, [fd]
+	lea rsi, [buf]
+	mov rdx, 1 ; only read one buffer
 
-	mov dword [x], 0
-	mov dword [y], 0
+	mov rax, 0 ; read
+	syscall
+
+	ret
+
+_start:
+	; open(path, O_RDONLY)
 
 	lea rdi, [path]
-	lea rsi, [mode]
+	mov rsi, 0 ; O_RDONLY
 
-	call fopen
-	mov [fp], rax
+	mov rax, 2 ; open
+	syscall
+	mov [fd], rax
 
-read_line:
-	mov byte [a], 0
-	mov dword [n], 0
+iter:
+	call read_byte
 
-	; fscanf(fp, "%s %d", &a[c], &n[c])
+	; read action
 
-	mov rdi, [fp]
-	lea rsi, [fmt]
-	lea rdx, [a]
-	lea rcx, [n]
+	mov al, [buf]
+	mov [act], al
 
-	call fscanf
+until_space:
+	call read_byte
 
-	; x
+	cmp byte [buf], 0x0A ; unexpected newline
+	je finish
 
-	mov ecx, 0
+	cmp byte [buf], 0x20 ; space character
+	jne until_space ; continuously read bytes until we arrive at a space character
 
-	mov ebx, 1
-	cmp byte [a], 0x66 ; 'f'
-	cmove ecx, ebx
-	
-	mov ebx, -1
-	cmp byte [a], 0x62 ; 'b'
-	cmove ecx, ebx
+	; read number
 
-	mov eax, [n]
-	imul eax, ecx
-	
+	call read_byte
+
+	xor eax, eax
+	mov al, [buf] ; low byte of eax
+	sub al, 0x30 ; convert to number
+	mov [num], eax
+
+	; process data
+
+	mov eax, 0
+	cmp byte [act], 0x66 ; 'f'
+	cmove eax, [num]
 	add [x], eax
 
-	; y
-
 	mov ecx, 0
 
 	mov ebx, 1
-	cmp byte [a], 0x64 ; 'd'
+	cmp byte [act], 0x64 ; 'd'
 	cmove ecx, ebx
 
 	mov ebx, -1
-	cmp byte [a], 0x75 ; 'u'
+	cmp byte [act], 0x75 ; 'u'
 	cmove ecx, ebx
 
-	mov eax, [n]
+	mov eax, [num]
 	imul eax, ecx
 	add [y], eax
 
-	; feof(fp)
+	; eat newline
 
-	mov rdi, [fp]
-	call feof
+	call read_byte
+	jmp iter
 
-	cmp rax, 0
-	jz read_line
+finish:
 
-	; fclose(fp)
+	; close(fd)
 
-	mov rdi, [fp]
-	call fclose
+	lea rdi, [fd]
 
-	; printf("part 1 %d\n", x * y)
+	mov rax, 3 ; close
+	syscall
 
-	lea rdi, [part1]
-	mov rsi, [x]
-	imul rsi, [y]
+	; write(stdout, "part 1 ", 7 /* exclude NULL */)
 
-	call printf
+	mov rdi, 1 ; stdout
+	lea rsi, [prefix]
+	mov rdx, 7
 
-	; return
+	mov rax, 1 ; write
+	syscall
 
-	xor rax, rax
-	pop rbp
-	ret
+	; print number
+
+	mov eax, [x]
+	imul eax, [y]
+	mov [num], eax
+
+	mov dword [unit], 100000000
+	mov bl, 0 ; not reduce?
+
+digit:
+	xor edx, edx
+	mov eax, [num]
+	div dword [unit]
+
+	; mod 10
+
+	xor edx, edx
+	mov ecx, 10
+	div ecx
+
+	; reduce
+
+	mov al, bl
+	or al, dl
+
+	cmp al, 0
+	je reduce
+
+	mov bl, 1
+
+	add edx, 0x30
+	mov byte [buf], dl
+
+	; write(stdout, buf, 1)
+
+	mov rdi, 1 ; stdout
+	lea rsi, [buf]
+	mov rdx, 1
+
+	mov rax, 1 ; write
+	syscall
+
+reduce:
+
+	; little trick to divide unit by 10
+
+	mov eax, 3435973837
+	imul rax, qword [unit]
+	shr rax, 35	
+	mov [unit], eax
+
+	cmp dword [unit], 0
+	jne digit
+
+	; write(stdout, "\n", 1)
+
+	lea rsi, [nl]
+
+	mov rax, 1 ; write
+	syscall
+
+	; exit(0)
+
+	mov rdi, 0
+
+	mov rax, 60 ; exit
+	syscall
