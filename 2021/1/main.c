@@ -9,6 +9,8 @@ int main(void) {
 
 	int i, a = 0, b = 0;
 
+	// here lies UB
+
 	for(i=0;i-c;a+=r[i]<r[++i]); // part 1
 	for(i=3;i-c;b+=r[i-3]>r[i++]); // part 2
 
