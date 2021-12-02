@@ -1,4 +1,4 @@
-f = [(s.split()[0], int(s.split()[1])) for s in open("input").readlines()]
+f = [(s.split()[0][0], int(s.split()[1])) for s in open("input").readlines()]
 
 # part 1
 
@@ -25,14 +25,15 @@ y = 0
 aim = 0
 
 for act, n in f:
-	if act == 'forward':
+	if act == 'f':
 		x += n
 		y += n * aim
-	if act == 'backward':
-		x -= n
-		y -= n * aim
+	if act == 'u': aim -= n
+	if act == 'd': aim += n
 
-	if act == 'up': aim -= n
-	if act == 'down': aim += n
+print(x, y, x * y)
 
-print(x * y)
+from itertools import accumulate
+
+r=(lambda f:(lambda x:sum([(a=='f')*n*x[i]for i,(a,n)in enumerate(f)]))(list(accumulate([n*((a=='d')-(a=='u'))for a,n in f])))*sum([n*(a=='f')for a,n in f]))([(x[0],int(y))for x,y in map(str.split,open("input").readlines())])
+print(r)
