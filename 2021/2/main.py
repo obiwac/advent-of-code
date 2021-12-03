@@ -1,4 +1,4 @@
-f = [(s.split()[0], int(s.split()[1])) for s in open("input").readlines()]
+f = [(s.split()[0][0], int(s.split()[1])) for s in open("input").readlines()]
 
 # part 1
 
@@ -12,11 +12,11 @@ for act, n in f:
 	if act == 'up': y -= n
 	if act == 'down': y += n
 
-# from functools import reduce
-# from operator import mul
+from functools import reduce
+from operator import mul
 
 print(x, y, x * y)
-# print(reduce(mul, [sum([(a == s[0]) * n - (a == s[1]) * n for a, n in f]) for s in ['fb', 'du']]))
+print(reduce(mul, [sum([(a == s[0]) * n - (a == s[1]) * n for a, n in f]) for s in ['fb', 'du']]))
 
 # part 2
 
@@ -36,3 +36,4 @@ for act, n in f:
 	if act == 'down': aim += n
 
 print(x * y)
+print(sum([(a == 'f') * n - (a == 'b') * n for a, n in f]))
