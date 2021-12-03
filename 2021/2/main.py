@@ -25,15 +25,27 @@ y = 0
 aim = 0
 
 for act, n in f:
-	if act == 'forward':
+	if act == 'f':
 		x += n
 		y += n * aim
-	if act == 'backward':
-		x -= n
-		y -= n * aim
+	if act == 'u': aim -= n
+	if act == 'd': aim += n
 
-	if act == 'up': aim -= n
-	if act == 'down': aim += n
+print(x, y, x * y)
+
+from itertools import accumulate
+
+r=(lambda f:(lambda x:sum([(a=='f')*n*x[i]for i,(a,n)in enumerate(f)]))(list(accumulate([n*((a=='d')-(a=='u'))for a,n in f])))*sum([n*(a=='f')for a,n in f]))([(x[0],int(y))for x,y in map(str.split,open("input").readlines())])
+print(r)
+
+
+
+
+#[expr1, expr2][-1]
+
+#=(lambda x, y: [y, 1 if x() == 1 else x()][0])(lambda y: , [])
+print(r)
+
 
 print(x * y)
 print(sum([(a == 'f') * n - (a == 'b') * n for a, n in f]))
