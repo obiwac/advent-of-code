@@ -1,5 +1,4 @@
 f = [x.strip() for x in open("input").readlines()]
-print(f)
 
 gamma = ""
 epislon = ""
@@ -64,5 +63,4 @@ for i in range(len(f[0])):
 		if x[i] != epislon[i]:
 			b.remove(x)
 
-print(a, b)
 print(int(a[0], 2) * int(b[0], 2))

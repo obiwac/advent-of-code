@@ -15,6 +15,7 @@ int main(void) {
 			accum += x - 0x30;
 		}
 
+		printf("%d\n", accum);
 		a[c] = accum;
 	}
 
