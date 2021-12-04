@@ -1,2 +1,2 @@
-f = [(x, y) for x,y in map(str.split, open("input").readlines())]
-print(f)
+f = [int(x) for x in map(str.strip, open(0).readlines())]
+print(sum(f))
