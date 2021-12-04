@@ -25,6 +25,10 @@ for draw in draws:
 		for row in board:
 			winners += [board] * (sum(x[1] for x in row) == 5)
 		
+		if o < len(winners):
+			values.append(draw)
+			continue
+
 		for col in zip(*board):
 			winners += [board] * (sum(x[1] for x in col) == 5)
 		
@@ -38,5 +42,6 @@ for draw in draws:
 
 *winners, = map(lambda winner: sum([x for x, y in sum(winner, []) if not y]), winners)
 
+print("test")
 print(values[0] * winners[0])
 print(values[-1] * winners[-1])
