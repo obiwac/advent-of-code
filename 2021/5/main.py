@@ -12,10 +12,11 @@ for line in f:
 	a = (z>x)-(z<x)
 	b = (w>y)-(w<y)
 
-	while x != z+a or y != w+b:
-		c[(x, y)] = c.get((x, y), 0) + 1
-		x+=a
-		y+=b
+	def recurse(c,x,y,z,w,a,b):
+		c[(x, y)] = c.get((x, y), 0) + 1 # not super functional
+		return recurse(c,x+a,y+b,z,w,a,b)if x!=z or y!=w else c
+
+	recurse(c, x, y, z, w, a, b)
 
 cnt = sum([x>1for x in c.values()])
 print(cnt)
