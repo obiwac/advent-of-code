@@ -1,19 +1,11 @@
 from itertools import accumulate as accum
 from itertools import chain
 from functools import reduce
-from collections import Counter
 
 f = [int(x) for x in map(str.strip, open(0).read().split(','))]
-f = Counter(f)
+f = [f.count(k)for k in range(10)]
 
-for i in range(10):
-	f.setdefault(i, 0)
+def r(r,d,f):
+	return r(r,d+1,[*map(lambda i:(f[i],f[i]+f[0],f[0])[1+(7,9).index(i)if i in(7,9)else 0],range(10))][1:]+[0])if d!=257else f
 
-for d in range(256 + 1):
-	f[7] += f[0]
-	f[9] += f[0]
-
-	for i in range(10):
-		f[i] = f[i + 1]
-
-print(sum([f[x] for x in range(8)]))
+print(sum([r(r,0,f)[x]for x in range(8)]))
