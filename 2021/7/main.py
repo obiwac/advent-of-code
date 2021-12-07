@@ -4,9 +4,9 @@ from functools import reduce
 
 f = [int(x) for x in map(str.strip, open(0).read().split(','))]
 
-# golfed x_X
+# golfed X_x
 
-print(min(sum(abs(i-j)*(abs(i-j)+1)/2for j in f)for i in range(max(f))))
+print(min(sum(abs(i-j)**2+abs(i-j)for j in f)/2for i in range(max(f))))
 
 # original solution
 
