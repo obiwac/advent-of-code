@@ -13,11 +13,8 @@ def recurse(f, d, x, y):
 
 for x in range(len(f)):
 	for y in range(len(f[x])):
-		adjacent = [f[z][w] for z, w in POSITIONS(x, y) if z in range(len(f)) and w in range(len(f[x]))]
-
-		if any(f[x][y] < a for a in adjacent):
-			d = []
-			basins.append(recurse(f, d, x, y))
+		if any(f[x][y] < f[z][w] for z, w in POSITIONS(x, y) if z in range(len(f)) and w in range(len(f[x]))):
+			basins.append(recurse(f, [], x, y))
 
 from functools import reduce
 print(reduce(lambda x, y: x * y, sorted(basins)[-3:]))
