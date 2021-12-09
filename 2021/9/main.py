@@ -5,17 +5,11 @@ basins = []
 def recurse(f, d, x, y):
 	d.append((x, y))
 	spot = int(f[x][y])
-	adjacent = []
 
-	def check(spot, adjacent, d, f, x, y):
-		if x not in range(len(f)) or y not in range(len(f[x])):
-			return 0
-		
-		a = int(f[x][y])
-		return recurse(f, d, x, y) if spot < a and (x, y) not in d and a != 9 else 0
+	def check(spot, d, f, x, y):
+		return recurse(f, d, x, y) if x in range(len(f)) and y in range(len(f[x])) and spot < int(f[x][y]) < 9 and (x, y) not in d else 0
 
-	positions = ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))
-	return 1 + sum(map(lambda p: check(spot, adjacent, d, f, *p), positions))
+	return 1 + sum(map(lambda p: check(spot, d, f, *p), ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))))
 
 for x in range(len(f)):
 	for y in range(len(f[x])):
