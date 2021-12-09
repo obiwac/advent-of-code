@@ -1,20 +1,18 @@
 f = [[*map(int, x)] for x in map(str.strip, open(0).read().strip().split('\n'))]
+from functools import reduce
 
 basins = []
 POSITIONS = lambda x, y: ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))
 
 def recurse(f, d, x, y):
-	d.append((x, y))
-
 	def check(spot, d, f, x, y):
-		return recurse(f, d, x, y) if x in range(len(f)) and y in range(len(f[x])) and spot < f[x][y] < 9 and (x, y) not in d else 0
+		return d | ({(x, y)} | recurse(f, d, x, y) if x in range(len(f)) and y in range(len(f[x])) and spot < f[x][y] < 9 else set())
 
-	return 1 + sum(map(lambda p: check(f[x][y], d, f, *p), POSITIONS(x, y)))
+	return d | {(x, y)} | reduce(lambda a, b: a | b, map(lambda p: check(f[x][y], set(), f, *p), POSITIONS(x, y)))
 
 for x in range(len(f)):
 	for y in range(len(f[x])):
 		if any(f[x][y] < f[z][w] for z, w in POSITIONS(x, y) if z in range(len(f)) and w in range(len(f[x]))):
-			basins.append(recurse(f, [], x, y))
+			basins.append(len(recurse(f, set(), x, y)))
 
-from functools import reduce
 print(reduce(lambda x, y: x * y, sorted(basins)[-3:]))
