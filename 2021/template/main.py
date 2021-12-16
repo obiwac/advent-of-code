@@ -1,8 +1,8 @@
-f = [[*map(int, map(str.strip, x.split(',')))] for x in map(str.strip, open(0).read().strip().split('\n'))]
-
+from itertools import chain
 from itertools import accumulate
+from functools import reduce
+from collections import Counter
+from operator import mul
 
-for y in f:
-	print([*accumulate(y * 5)])
-
-# print(sum(sum(f, [])))
+f = [int(x) for x in map(str.strip, open(0).read().strip().split('\n'))]
+print(f)

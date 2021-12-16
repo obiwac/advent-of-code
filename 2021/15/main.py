@@ -1,7 +1,7 @@
 import heapq
 
 o = [[*map(lambda y: int(y), x)] for x in map(str.strip, open(0).read().strip().split('\n'))]
-f = []
+f = o
 
 for r in range(5):
 	for l in o:
