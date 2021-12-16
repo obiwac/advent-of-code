@@ -1,8 +1,4 @@
-from itertools import chain
-from itertools import accumulate
-from functools import reduce
-from collections import Counter
-from operator import mul
+import math
 
 f = "".join(bin(int(x, 16))[2:].zfill(4) for x in open(0).read().strip())
 
@@ -10,69 +6,53 @@ s = 0
 ptr = 0
 
 def rd(i):
-	global f, ptr
+	global ptr
 	res = f[ptr:i+ptr]
 	ptr += i
-	return res
+	return int(res, 2)
 
 def packet():
-	global s, ptr
+	global s
 
-	version = int(rd(3), 2)
+	version = rd(3)
 	s += version
-	typeid = int(rd(3), 2)
+	typeid = rd(3)
 
-	val = 0
+	if typeid == 4:
+		num = 0
 
-	if typeid == 4: # literal value
-		num = ""
-
-		while int(rd(1), 2):
-			num += rd(4)
+		while rd(1):
+			num |= rd(4)
+			num <<= 4
 		
-		num += rd(4)
-		val = int(num, 2)
+		return num | rd(4)
 	
-	else: # operator
-		lentypeid = int(rd(1), 2)
+	lentypeid = rd(1)
+	l = []
 
-		op = {
-			0: "sum",
-			1: "prod",
-			2: "min",
-			3: "max",
-			5: "gt",
-			6: "lt",
-			7: "eq",
-		}[typeid]
+	if lentypeid:
+		subpackets = rd(11)
 
-		l = []
+		for _ in range(subpackets):
+			l.append(packet())
 
-		if lentypeid:
-			subpackets = int(rd(11), 2)
+	else:
+		length = rd(15)
 
-			for _ in range(subpackets):
-				l.append(packet())
+		while length:
+			pp = ptr
+			l.append(packet())
+			length -= ptr - pp
 	
-		else:
-			length = int(rd(15), 2)
-
-			while length:
-				pp = ptr
-				l.append(packet())
-				length -= ptr - pp
-		
-		if op == "sum": l = sum(l)
-		if op == "prod": l = reduce(lambda x, y: x * y, l)
-		if op == "min": l = min(l)
-		if op == "max": l = max(l)
-		if op == "gt": l = l[0] > l[1]
-		if op == "lt": l = l[0] < l[1]
-		if op == "eq": l = l[0] == l[1]
-
-		val = l
-	
-	return val
+	return {
+		0: sum,
+		1: math.prod,
+		2: min,
+		3: max,
+		5: lambda l: l[0] > l[1],
+		6: lambda l: l[0] < l[1],
+		7: lambda l: l[0] == l[1],
+	}[typeid](l)
 
 print(packet())
 print(s)
