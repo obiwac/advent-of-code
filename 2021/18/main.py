@@ -1,6 +1,7 @@
 import math
 import ast
 from functools import reduce
+from copy import deepcopy
 
 f = [ast.literal_eval(x) for x in map(str.strip, open(0).read().strip().split('\n'))]
 
@@ -69,7 +70,6 @@ def mag(x):
 
 	return r
 
-from copy import deepcopy
 print(mag(reduce(add, f)))
 
 vals = []
