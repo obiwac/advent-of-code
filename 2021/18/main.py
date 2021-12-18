@@ -1,10 +1,6 @@
 import math
 import ast
-from itertools import chain, groupby
-from itertools import accumulate
 from functools import reduce
-from collections import Counter
-from operator import mul
 
 f = [ast.literal_eval(x) for x in map(str.strip, open(0).read().strip().split('\n'))]
 
