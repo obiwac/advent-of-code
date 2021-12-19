@@ -1,10 +1,5 @@
-import numpy as np
 import glm
 import math
-from itertools import chain, accumulate, permutations
-from functools import reduce
-from collections import Counter, defaultdict
-from operator import mul
 
 print("Generating rotation quaternions ...")
 
