@@ -32,10 +32,8 @@ print(rolls * min(p))
 
 r = {} # possible states
 
-# i tells us if it's A's turn or B's turn
-
-def universe(s, p, i = 0):
-	h = hash((*s, *p, i))
+def universe(s, p):
+	h = hash((*s, *p))
 
 	if h in r: # have we already encountered a state?
 		return r[h]
@@ -44,19 +42,13 @@ def universe(s, p, i = 0):
 
 	for d in range(27): # 3 * 3 * 3 universes generated after turn
 		steps = d // 3 // 3 + d // 3 % 3 + d % 3 + 3
-		pos = (s[i] + steps) % 10 + 1
+		pos = (s[0] + steps) % 10 + 1
 
-		_p = list(p)
-		_s = list(s)
-
-		_p[i] += pos
-
-		if _p[i] >= 21: # win?
-			w[i] += 1
+		if p[0] + pos >= 21: # win?
+			w[0] += 1
 			continue
 
-		_s[i] = pos - 1
-		_p = universe(_s, _p, i ^ 1)
+		*_p, = reversed(universe([s[1], pos - 1], [p[1], p[0] + pos]))
 		
 		w[0] += _p[0]
 		w[1] += _p[1]
