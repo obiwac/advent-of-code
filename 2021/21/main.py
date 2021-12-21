@@ -1,9 +1,3 @@
-from itertools import chain
-from itertools import accumulate
-from functools import reduce
-from collections import Counter
-from operator import mul
-
 s = [4, 8] # starting position
 rolls = 0
 
