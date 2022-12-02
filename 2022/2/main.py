@@ -23,6 +23,7 @@ for l in f:
 	if mine == (opponent % 3) + 1: s += 6
 
 print(s)
+print(sum((lambda a,b:b-87+3*(a+23==b)+6*(b-88==(a-64)%3))(*map(ord,l.split()))for l in f))
 
 # part 2
 
@@ -41,3 +42,4 @@ for l in f:
 	if mine == 3: s += (opponent % 3) + 1
 
 print(s)
+print(sum((lambda a,b:((a-63)%3+1,a-61,((a-64)%3)+7)[b-88])(*map(ord,l.split()))for l in f))
