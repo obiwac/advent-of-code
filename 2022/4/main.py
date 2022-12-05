@@ -13,14 +13,12 @@ s = 0
 
 for l in f:
 	a = l.strip().split(',')
-	x1, x2 = map(int, a[1].split('-'))
-	y1, y2 = map(int, a[0].split('-'))
 
-	if x1 >= y1 and x2 <= y2:
-		s += 1
+	x1, x2 = map(int, a[0].split('-'))
+	y1, y2 = map(int, a[1].split('-'))
 
-	elif y1 >= x1 and y2 <= x2:
-		s += 1
+	s += x1 >= y1 and x2 <= y2
+	s ++ y1 >= x1 and y2 <= x2
 
 print(s)
 
@@ -30,13 +28,11 @@ s = 0
 
 for l in f:
 	a = l.strip().split(',')
-	x1, x2 = map(int, a[1].split('-'))
-	y1, y2 = map(int, a[0].split('-'))
 
-	if y1 <= x1 <= y2:
-		s += 1
-	
-	elif x1 <= y1 <= x2:
-		s += 1
+	x1, x2 = map(int, a[0].split('-'))
+	y1, y2 = map(int, a[1].split('-'))
+
+	s += y1 <= x1 <= y2
+	s += x1 <= y1 <= x2
 
 print(s)
