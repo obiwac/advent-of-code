@@ -7,6 +7,7 @@ from collections import defaultdict
 from copy import deepcopy
 
 import numpy as np
+import heapq
 
 f = open(0).read().strip().split('\n')
 
@@ -30,15 +31,15 @@ for i, l in enumerate(f):
 
 candidates = []
 
-for j in range(len(heightmap))[::-1]:
+for j in range(len(heightmap)):
 	start = (0, j)
 	q = []
 	costs = [[np.inf] * len(heightmap[0]) for _ in heightmap]
 	costs[start[1]][start[0]] = 0
-	q.append((start, 0))
+	heapq.heappush(q, (start, 0))
 
 	while q:
-		node, cost = q.pop()
+		node, cost = heapq.heappop(q)
 		x, y = node
 		incidents = [(x, y + 1), (x, y - 1), (x + 1, y), (x - 1, y)]
 
@@ -51,7 +52,7 @@ for j in range(len(heightmap))[::-1]:
 
 			if cost + 1 < costs[i[1]][i[0]]:
 				costs[i[1]][i[0]] = cost + 1
-				q.append((i, costs[i[1]][i[0]]))
+				heapq.heappush(q, (i, costs[i[1]][i[0]]))
 
 	print(j, costs[end[1]][end[0]])
 	candidates.append(costs[end[1]][end[0]])
