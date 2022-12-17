@@ -32,23 +32,27 @@ shapes = [
 ##"""
 		]
 
-m = [["."] * 7 for _ in range(200000)]
+m = [["."] * 7 for _ in range(500000)]
 waterline = 0
+SURENESS = 5
 
 def pm(m, h = waterline):
 	print("===")
-	for l in map("".join, reversed(m[h - 10: h + 10])):
+	for l in map("".join, reversed(m[h - 10: h])):
 		print(l)
+
+def hm(m, h = waterline):
+	return hash(tuple(map("".join, reversed(m[h - SURENESS: h])))) # prolly don't need to go as high
 
 a = 0
 fi = 0
-lcm = math.lcm(len(f), len(shapes))
 waterlines = [0] # should be 2 * lcm large (adding 0 so we can index from 1)
-targ = lcm * 4
-seen = {} # k: hash, 
+targ = 1000000000000
+seen = {} # key: hash, value: waterline
 
 while 1:
-	shape = shapes[a % len(shapes)].split('\n')
+	si = a % len(shapes)
+	shape = shapes[si].split('\n')
 	x, y = 2, waterline + 3
 
 	# simulate falling
@@ -61,8 +65,8 @@ while 1:
 		# push
 
 		o = x
-		c = f[fi % len(f)]
-		fi += 1
+		c = f[fi]
+		fi = (fi + 1) % len(f)
 		x += 1 if c == '>' else -1
 		x = max(x, 0)
 		x = min(x, 7 - len(shape[0]))
@@ -102,20 +106,26 @@ while 1:
 
 	a += 1
 	waterlines.append(waterline)
-	# if a == lcm * 2 or a == targ: break
-	if a == targ: break
 
-print(waterlines[targ]) # REMME
+	if a <= SURENESS:
+		continue
 
-if 1: # targ > lcm * 2:
-	first = waterlines[lcm]
-	second = waterlines[lcm * 2] - waterlines[lcm]
-	last = waterlines[lcm + targ % lcm] - waterlines[lcm]
-	final = first + second * (targ // lcm - 1) + last
+	h = hm(m, waterline) ^ hash(fi) ^ hash(si)
 
-	print(first, second, last, final)
+	if h not in seen:
+		seen[h] = []
 
-else:
-	print(waterlines[targ])
+	seen[h].append(a)
 
-__import__("time").sleep(0.1)
+	if len(seen[h]) >= 3: # we can stop here, we've got all the data we need
+		start = seen[h][1]
+		end = seen[h][2]
+		period = end - start
+		break
+
+first = waterlines[start]
+second = waterlines[end] - waterlines[start]
+last = waterlines[start + (targ - start) % period] - waterlines[start]
+final = first + second * ((targ - start) // period) + last
+
+print(first, second, (targ - 1) // period, last, final)
