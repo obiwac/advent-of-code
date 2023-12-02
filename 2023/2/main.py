@@ -1,8 +1,10 @@
 games = open(0).readlines()
+
+# part 1
+
 s = 0
 
 for game in games:
-	print(game)
 	a, b = game.split(":")
 	_id = int(a.split()[1])
 
@@ -38,5 +40,38 @@ for game in games:
 		continue
 
 	s += _id
+
+print(s)
+
+# part 2
+
+s = 0
+
+for game in games:
+	a, b = game.split(":")
+
+	rounds = b.split("; ")
+
+	red = 0
+	green = 0
+	blue = 0
+
+	for _round in rounds:
+		things = _round.split(", ")
+
+		for thing in things:
+			n, colour = thing.split()
+			n = int(n)
+
+			if colour == "red":
+				red = max(red, n)
+
+			elif colour == "green":
+				green = max(green, n)
+
+			elif colour == "blue":
+				blue = max(blue, n)
+
+	s += red * green * blue
 
 print(s)
