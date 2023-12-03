@@ -2,6 +2,7 @@ import re
 
 *f, = map(str.strip, open(0).readlines())
 s = 0
+p2 = 0
 
 gears = {}
 
@@ -28,10 +29,21 @@ for y, l in enumerate(f):
 		# bottom edge
 		
 		def try_index(i, j):
+			global p2
+
 			if i < 0 or j < 0 or i >= len(f) or j >= len(f[i]):
 				return '.'
 
 			c = f[j][i]
+
+			if c == "*":
+				if (i, j) in gears:
+					p2 += gears[(i, j)] * num
+					del gears[(i, j)]
+
+				else:
+					gears[(i, j)] = num
+
 			return c
 
 		is_comp = False
@@ -56,3 +68,4 @@ for y, l in enumerate(f):
 		x += span[1]
 
 print(s)
+print(p2)
