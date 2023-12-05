@@ -53,6 +53,13 @@ def get(state, v):
 
 	return v
 
+def get_invert(state, v):
+	for k, u in maps[state].items():
+		if v >= u and v < u + (k[1] - k[0]):
+			return k[0] + (v - u)
+
+	return v
+
 for seed in seeds:
 	soil = get("seed_to_soil", seed)
 	fertilizer = get("soil_to_fertilizer", soil)
@@ -65,3 +72,28 @@ for seed in seeds:
 	s = min(s, location)
 
 print(s)
+
+# find first location in seeds
+
+location = 17700000
+
+while 1:
+	humidity = get_invert("humidity_to_location", location)
+	temperature = get_invert("temperature_to_humidity", humidity)
+	light = get_invert("light_to_temperature", temperature)
+	water = get_invert("water_to_light", light)
+	fertilizer = get_invert("fertilizer_to_water", water)
+	soil = get_invert("soil_to_fertilizer", fertilizer)
+	seed = get_invert("seed_to_soil", soil)
+
+	# check seed
+
+	for i in range(0, len(seeds), 2):
+		if seed >= seeds[i] and seed < seeds[i] + seeds[i + 1]:
+			print(location)
+			exit()
+
+	location += 1
+
+	if location % 100000 == 0:
+		print(location)
