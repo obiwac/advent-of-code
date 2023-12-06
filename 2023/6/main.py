@@ -1,20 +1,24 @@
 f = open(0).readlines()
 
-*times, = map(int, f[0].split()[1:])
-*dists, = map(int, f[1].split()[1:])
+*p1_times, = map(int, f[0].split()[1:])
+*p1_dists, = map(int, f[1].split()[1:])
 
-s = 1
+*p2_times, = map(int, ["".join(f[0].split()[1:])])
+*p2_dists, = map(int, ["".join(f[1].split()[1:])])
 
-for time, dist in zip(times, dists):
-	ways = 0
+for times, dists in ((p1_times, p1_dists), (p2_times, p2_dists)):
+	s = 1
 
-	for press_time in range(time + 1):
-		speed = press_time
-		remaining_time = time - press_time
+	for time, dist in zip(times, dists):
+		ways = 0
 
-		if speed * remaining_time > dist:
-			ways += 1
+		for press_time in range(time + 1):
+			speed = press_time
+			remaining_time = time - press_time
 
-	s *= ways
+			if speed * remaining_time > dist:
+				ways += 1
 
-print(s)
+		s *= ways
+
+	print(s)
