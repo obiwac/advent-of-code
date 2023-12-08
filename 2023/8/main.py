@@ -12,16 +12,34 @@ for node_raw in nodes_raw:
 
 	nodes[name] = (left, right)
 
-cur = "AAA"
-i = 0
+starts = [name for name in nodes if name[-1] == "A"]
+dists = []
 
-while cur != "ZZZ":
-	if instructions[i % len(instructions)] == "L":
-		cur = nodes[cur][0]
+for start in starts:
+	cur = start
+	dist = 0
 
-	else:
-		cur = nodes[cur][1]
+	while cur[-1] != "Z":
+		if instructions[dist % len(instructions)] == "L":
+			cur = nodes[cur][0]
 
-	i += 1
+		else:
+			cur = nodes[cur][1]
 
-print(i)
+		dist += 1
+
+	dists.append(dist)
+
+# least common multiple of all elements in dists
+
+import math
+
+def lcm(a, b):
+	return a * b // math.gcd(a, b)
+
+l = dists[0]
+
+for d in dists[1:]:
+	l = lcm(l, d)
+
+print(dists, l)
