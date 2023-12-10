@@ -53,7 +53,7 @@ for y, row in enumerate(f):
 
 	for x, col in enumerate(row):
 		if f[y][x] == "S":
-			f[y][x] = "F"
+			f[y][x] = "F" # yes, hardcoded, but this would take a lot of time to do correctly :)
 
 		if in_horz and f[y][x] != "-":
 			if (first_horz not in SOUTH and f[y][x] in SOUTH) or first_horz not in NORTH and f[y][x] in NORTH:
