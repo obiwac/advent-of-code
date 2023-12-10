@@ -52,54 +52,52 @@ while q:
 # for d in dists:
 # 	print("".join(map(lambda x: str(x) if x >= 0 else ".", d)))
 
-print(max(sum(dists, [])) + 1)
+in_count = 0
 
-NONE = -1
-IN = 0
-OUT = 1
+for y, row in enumerate(f):
+	inside = False
+	in_horz = False
+	first_horz = "."
 
-status = [[NONE] * len(f[0]) for _ in range(len(f))]
+	for x, col in enumerate(row):
+		if f[y][x] == "S":
+			f[y][x] = "F"
+
+		if in_horz and f[y][x] != "-":
+			if first_horz not in SOUTH and f[y][x] in SOUTH:
+				inside = not inside
+
+			if first_horz not in NORTH and f[y][x] in NORTH:
+				inside = not inside
+
+			in_horz = False
+			continue
+
+		if in_horz:
+			continue
+
+		if (x, y) in loop:
+			if f[y][x] in EAST + WEST:
+				first_horz = f[y][x]
+				in_horz = True
+				continue
+
+			inside = not inside
+			continue
+
+		if inside:
+			f[y][x] = "I"
+			in_count += 1
 
 for y, row in enumerate(f):
 	for x, col in enumerate(row):
-		if col != ".":
+		if (x, y) in loop or col == "I":
+			print(col, end="")
 			continue
 
-		if status[y][x] != NONE:
-			continue
-
-		q = [(x, y)]
-		status[y][x] = IN
-		done = [(x, y)]
-		is_out = False
-
-		while q:
-			x, y = q.pop(0)
-
-			for dx, dy in ((0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (-1, 1), (-1, -1), (1, -1)):
-				nx = x + dx
-				ny = y + dy
-
-				if ny >= len(f) or ny < 0 or nx >= len(f[0]) or nx < 0:
-					is_out = True
-					continue
-
-				if f[ny][nx] != ".":
-					continue
-
-				if status[ny][nx] == NONE:
-					status[ny][nx] = IN
-					done.append((nx, ny))
-					q.append((nx, ny))
-
-		if is_out:
-			for x, y in done:
-				status[y][x] = OUT
-
-for y, row in enumerate(f):
-	for x, col in enumerate(row):
-		print(f[y][x] if status[y][x] == NONE else ("I" if status[y][x] == IN else "O"), end="")
+		print("O", end="")
 
 	print()
 
-print(sum(status, []).count(IN))
+print(max(sum(dists, [])) + 1)
+print(in_count)
