@@ -33,19 +33,11 @@ while q:
 		cur = f[y][x]
 		n = f[ny][nx]
 
-		if dx == 1 and cur in EAST and n in WEST:
-			q.append((nx, ny))
-			dists[ny][nx] = dists[y][x] + 1
-
-		if dx == -1 and cur in WEST and n in EAST:
-			q.append((nx, ny))
-			dists[ny][nx] = dists[y][x] + 1
-
-		if dy == 1 and cur in SOUTH and n in NORTH:
-			q.append((nx, ny))
-			dists[ny][nx] = dists[y][x] + 1
-
-		if dy == -1 and cur in NORTH and n in SOUTH:
+		if \
+			(dx ==  1 and cur in EAST and n in WEST) or \
+			(dx == -1 and cur in WEST and n in EAST) or \
+			(dy ==  1 and cur in SOUTH and n in NORTH) or \
+			(dy == -1 and cur in NORTH and n in SOUTH):
 			q.append((nx, ny))
 			dists[ny][nx] = dists[y][x] + 1
 
@@ -64,10 +56,7 @@ for y, row in enumerate(f):
 			f[y][x] = "F"
 
 		if in_horz and f[y][x] != "-":
-			if first_horz not in SOUTH and f[y][x] in SOUTH:
-				inside = not inside
-
-			if first_horz not in NORTH and f[y][x] in NORTH:
+			if (first_horz not in SOUTH and f[y][x] in SOUTH) or first_horz not in NORTH and f[y][x] in NORTH:
 				inside = not inside
 
 			in_horz = False
