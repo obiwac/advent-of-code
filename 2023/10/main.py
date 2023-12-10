@@ -9,7 +9,7 @@ for y, row in enumerate(f):
 
 q = [start]
 dists = [[-1] * len(f[0]) for _ in range(len(f))]
-loop = []
+loop = [[False] * len(f[0]) for _ in range(len(f))]
 
 NORTH = "S|LJ"
 SOUTH = "S|7F"
@@ -18,7 +18,7 @@ WEST = "S-7J"
 
 while q:
 	x, y = q.pop(0)
-	loop.append((x, y))
+	loop[y][x] = True
 
 	for dx, dy in ((0, 1), (1, 0), (0, -1), (-1, 0)):
 		nx = x + dx
@@ -65,7 +65,7 @@ for y, row in enumerate(f):
 		if in_horz:
 			continue
 
-		if (x, y) in loop:
+		if loop[y][x]:
 			if f[y][x] in EAST + WEST:
 				first_horz = f[y][x]
 				in_horz = True
@@ -80,7 +80,7 @@ for y, row in enumerate(f):
 
 for y, row in enumerate(f):
 	for x, col in enumerate(row):
-		if (x, y) in loop or col == "I":
+		if loop[y][x] or col == "I":
 			print(col, end="")
 			continue
 
