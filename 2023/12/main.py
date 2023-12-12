@@ -1,5 +1,3 @@
-import itertools
-
 f = open(0).read().strip().split('\n')
 
 s = 0
@@ -8,6 +6,7 @@ for l in f:
 	m, n = l.split()
 	*n, = map(int, n.split(','))
 
+	"""
 	exp = m.count("?")
 
 	for i in range(2 ** exp):
@@ -30,9 +29,9 @@ for l in f:
 			s += 1
 
 	print(l)
-
 	"""
-	# (hole_size, start, end, damaged_before, damaged_after)
+
+	# (start, end, damaged_before, damaged_after)
 
 	holes = []
 	contiguous = 0
@@ -43,8 +42,8 @@ for l in f:
 			contiguous += 1
 
 		if c in "#." and contiguous:
-			holes.append([contiguous, i - contiguous, i, damaged_count, 0])
-			if len(holes) >= 2: holes[-2][2] = damaged_count
+			holes.append([i - contiguous, i - 1, damaged_count, 0])
+			if len(holes) >= 2: holes[-2][3] = damaged_count
 
 			contiguous = 0
 			damaged_count = 0
@@ -55,8 +54,13 @@ for l in f:
 		if c == ".": damaged_count = 0
 
 	if contiguous:
-		holes.append([contiguous, len(m) - contiguous, len(m) - 1, damaged_count, 0])
-		if len(holes) >= 2: holes[-2][2] = damaged_count
+		holes.append([len(m) - contiguous, len(m) - 1, damaged_count, 0])
+		if len(holes) >= 2: holes[-2][3] = damaged_count
+
+	# DP, state space should be i, n_left, holes_left
+
+	"""
+	# TODO how do we handle in between damaged stuff?
 
 	def r(n_left, holes_left):
 		# base case: nothing left!
@@ -79,9 +83,33 @@ for l in f:
 		if to_place >= damaged_before and to_place <= hole_size - 1 + damaged_before: # can place at the beginning
 			...
 
-		if to_place <= hole_size - 1 + damaged_after: # can place at the end
+		if to_place >= damaged_after and to_place <= hole_size - 1 + damaged_after: # can place at the end
+			...
 
 	r(n, holes)
 	"""
+
+	cache = {}
+
+	def r(i, ni, hist = [], l = 0):
+		state = (i, ni)
+		if state in cache: return cache[state]
+
+		if ni >= len(n):
+			print(state, hist)
+			return 1
+
+		arr = 0
+
+		for start, end, _, _ in holes:
+			for j in range(start, end - n[ni] + 2):
+				if j < i: continue
+				arr += r(j + n[ni] + 1, ni + 1, hist + [j], l + 1)
+
+		cache[state] = arr
+		return arr
+
+	s += r(0, 0)
+	break
 
 print(s)
