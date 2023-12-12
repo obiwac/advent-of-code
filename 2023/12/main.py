@@ -6,6 +6,9 @@ for l in f:
 	m, n = l.split()
 	*n, = map(int, n.split(','))
 
+	n = n * 5
+	m = "?".join([m] * 5)
+
 	"""
 	exp = m.count("?")
 
@@ -59,9 +62,11 @@ for l in f:
 
 	cache = {}
 
-	def r(i, ni, hist = [], l = 0):
+	def r(i, ni, hist = ()):
 		state = (i, ni)
-		# if state in cache: return cache[state]
+
+		if state in cache:
+			return cache[state]
 
 		if ni >= len(n):
 			fill_mask = 0
@@ -72,19 +77,21 @@ for l in f:
 				for i in range(a, b + 1):
 					fill_mask |= 1 << i
 
-			return fill_mask & must_mask == must_mask
+			cache[state] = fill_mask & must_mask == must_mask
+			return cache[state]
 
 		arr = 0
 
 		for start, end in holes:
 			for j in range(start, end - n[ni] + 2):
 				if j < i: continue
-				arr += r(j + n[ni] + 1, ni + 1, hist + [j], l + 1)
+				arr += r(j + n[ni] + 1, ni + 1, hist + (j,))
 
 		cache[state] = arr
 		return arr
 
 	v = r(0, 0)
+	print(v)
 	s += v
 
 print(s)
