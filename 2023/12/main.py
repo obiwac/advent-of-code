@@ -31,77 +31,52 @@ for l in f:
 	print(l)
 	"""
 
-	# (start, end, damaged_before, damaged_after)
+	def where_hole(thing, other):
+		holes = []
+		contiguous = 0
 
-	holes = []
-	contiguous = 0
-	damaged_count = 0
+		for i, c in enumerate(m):
+			if c in thing:
+				contiguous += 1
 
-	for i, c in enumerate(m):
-		if c == "?":
-			contiguous += 1
+			if c in other and contiguous:
+				holes.append([i - contiguous, i - 1])
+				contiguous = 0
 
-		if c in "#." and contiguous:
-			holes.append([i - contiguous, i - 1, damaged_count, 0])
-			if len(holes) >= 2: holes[-2][3] = damaged_count
+		if contiguous:
+			holes.append([len(m) - contiguous, len(m) - 1])
 
-			contiguous = 0
-			damaged_count = 0
+		return holes
 
-		if c == "#":
-			damaged_count += 1
+	holes = where_hole("?#", ".")
+	damaged = where_hole("#", "?.")
 
-		if c == ".": damaged_count = 0
+	must_mask = 0
 
-	if contiguous:
-		holes.append([len(m) - contiguous, len(m) - 1, damaged_count, 0])
-		if len(holes) >= 2: holes[-2][3] = damaged_count
-
-	# DP, state space should be i, n_left, holes_left
-
-	"""
-	# TODO how do we handle in between damaged stuff?
-
-	def r(n_left, holes_left):
-		# base case: nothing left!
-
-		if not n_left or not holes_left:
-			return
-
-		# place first group, and then recurse into the rest
-
-		hole_size, start, end, damaged_before, damaged_after = holes_left[0]
-		full_size = hole_size + damaged_before + damaged_after
-		to_place = n[0]
-
-		if to_place >= full_size: # can't place anything
-			return
-
-		if to_place == full_size: # only one arrangement possible, move on
-			return r(n[1:], holes_left[1:])
-
-		if to_place >= damaged_before and to_place <= hole_size - 1 + damaged_before: # can place at the beginning
-			...
-
-		if to_place >= damaged_after and to_place <= hole_size - 1 + damaged_after: # can place at the end
-			...
-
-	r(n, holes)
-	"""
+	for a, b in damaged:
+		for i in range(a, b + 1):
+			must_mask |= 1 << i
 
 	cache = {}
 
 	def r(i, ni, hist = [], l = 0):
 		state = (i, ni)
-		if state in cache: return cache[state]
+		# if state in cache: return cache[state]
 
 		if ni >= len(n):
-			print(state, hist)
-			return 1
+			fill_mask = 0
+
+			for a, c in zip(hist, n):
+				b = a + c - 1
+
+				for i in range(a, b + 1):
+					fill_mask |= 1 << i
+
+			return fill_mask & must_mask == must_mask
 
 		arr = 0
 
-		for start, end, _, _ in holes:
+		for start, end in holes:
 			for j in range(start, end - n[ni] + 2):
 				if j < i: continue
 				arr += r(j + n[ni] + 1, ni + 1, hist + [j], l + 1)
@@ -109,7 +84,7 @@ for l in f:
 		cache[state] = arr
 		return arr
 
-	s += r(0, 0)
-	break
+	v = r(0, 0)
+	s += v
 
 print(s)
