@@ -1,79 +1,75 @@
 *f, = map(str, open(0).read().strip().split('\n'))
 
-# x, y, direction
+def do(start):
+	beams = [start]
+	had = [[set() for _ in range(len(f[0]))] for _ in range(len(f))]
+	energized = set()
 
-beams = [[-1, 0, 1, 0]]
+	while beams:
+		for beam in list(beams):
+			x, y = beam[0], beam[1]
+			dx, dy = beam[2], beam[3]
+			nx, ny = x + dx, y + dy
 
-UP = 0b0001
-DOWN = 0b0010
-LEFT = 0b0100
-RIGHT = 0b1000
+			if not (x < 0 or x >= len(f[0]) or y < 0 or y >= len(f)):
+				if (dx, dy) in had[y][x]:
+					beams.pop(beams.index(beam))
+					continue
 
-had = [[set() for _ in range(len(f[0]))] for _ in range(len(f))]
-energized = set()
+				had[y][x].add((dx, dy))
+				energized.add((x, y))
 
-while beams:
-	for i, beam in enumerate(list(beams)):
-		x, y = beam[0], beam[1]
-		dx, dy = beam[2], beam[3]
-		nx, ny = x + dx, y + dy
+			if nx < 0 or nx >= len(f[0]) or ny < 0 or ny >= len(f):
+				beams.pop(beams.index(beam))
+				continue
 
-		if (dx, dy) in had[y][x]:
-			beams.pop(beams.index(beam))
-			continue
+			if f[ny][nx] == ".":
+				beam[0], beam[1] = nx, ny
+				continue
 
-		had[y][x].add((dx, dy))
-		energized.add((x, y))
+			if f[ny][nx] == "-" and dx != 0:
+				beam[0], beam[1] = nx, ny
+				continue
 
-		if nx < 0 or nx >= len(f[0]) or ny < 0 or ny >= len(f):
-			beams.pop(beams.index(beam))
-			continue
+			if f[ny][nx] == "|" and dy != 0:
+				beam[0], beam[1] = nx, ny
+				continue
 
-		if f[ny][nx] == ".":
-			beam[0], beam[1] = nx, ny
-			continue
+			if f[ny][nx] == "/":
+				beam[0], beam[1] = nx, ny
 
-		if f[ny][nx] == "-" and dx != 0:
-			beam[0], beam[1] = nx, ny
-			continue
+				if dx == 1: beam[2], beam[3] = 0, -1
+				if dx == -1: beam[2], beam[3] = 0, 1
+				if dy == 1: beam[2], beam[3] = -1, 0
+				if dy == -1: beam[2], beam[3] = 1, 0
 
-		if f[ny][nx] == "|" and dy != 0:
-			beam[0], beam[1] = nx, ny
-			continue
+				continue
 
-		if f[ny][nx] == "/":
-			beam[0], beam[1] = nx, ny
+			if f[ny][nx] == "\\":
+				beam[0], beam[1] = nx, ny
 
-			if dx == 1: beam[2], beam[3] = 0, -1
-			if dx == -1: beam[2], beam[3] = 0, 1
-			if dy == 1: beam[2], beam[3] = -1, 0
-			if dy == -1: beam[2], beam[3] = 1, 0
+				if dx == 1: beam[2], beam[3] = 0, 1
+				if dx == -1: beam[2], beam[3] = 0, -1
+				if dy == 1: beam[2], beam[3] = 1, 0
+				if dy == -1: beam[2], beam[3] = -1, 0
 
-			continue
+				continue
 
-		if f[ny][nx] == "\\":
-			beam[0], beam[1] = nx, ny
+			if f[ny][nx] == "-" and dx == 0:
+				beam[0], beam[1] = nx, ny
+				beam[2], beam[3] = 1, 0
+				beams.append([nx, ny, -1, 0])
+				continue
 
-			if dx == 1: beam[2], beam[3] = 0, 1
-			if dx == -1: beam[2], beam[3] = 0, -1
-			if dy == 1: beam[2], beam[3] = 1, 0
-			if dy == -1: beam[2], beam[3] = -1, 0
+			if f[ny][nx] == "|" and dy == 0:
+				beam[0], beam[1] = nx, ny
+				beam[2], beam[3] = 0, 1
+				beams.append([nx, ny, 0, -1])
+				continue
 
-			continue
+			raise Exception("shouldn't happen")
 
-		if f[ny][nx] == "-" and dx == 0:
-			beam[0], beam[1] = nx, ny
-			beam[2], beam[3] = 1, 0
-			beams.append([nx, ny, -1, 0])
-			continue
-
-		if f[ny][nx] == "|" and dy == 0:
-			beam[0], beam[1] = nx, ny
-			beam[2], beam[3] = 0, 1
-			beams.append([nx, ny, 0, -1])
-			continue
-
-		raise Exception("shouldn't happen")
+	return len(energized)
 
 """
 for y in range(len(f)):
@@ -105,4 +101,16 @@ for y in range(len(f)):
 	print()
 """
 
-print(len(energized))
+print(do([-1, 0, 1, 0]))
+
+s = 0
+
+for y in range(len(f)):
+	s = max(s, do([-1, y, 1, 0]))
+	s = max(s, do([len(f), y, -1, 0]))
+
+for x in range(len(f[0])):
+	s = max(s, do([x, -1, 0, 1]))
+	s = max(s, do([x, len(f[0]), 0, -1]))
+
+print(s)
