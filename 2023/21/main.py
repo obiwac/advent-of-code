@@ -1,5 +1,4 @@
-from matplotlib import pyplot as plt
-import numpy as np
+import math
 
 *f, = map(list, open(0).read().strip().split('\n'))
 w, h = len(f[0]), len(f)
@@ -11,50 +10,106 @@ for i in range(len(f)):
 		if f[i][j] == 'S':
 			starting_point = (j, i)
 
-vx = []
-v = []
+full_poss = [0, 0]
 
-for steps in range(1, 100):
-	vx.append(steps)
-	q = [(starting_point, 0)]
-	right_dist = set()
-	pcurdist = -1
+grid_poss = [
+	[[False] * w for _ in range(h)],
+	[[False] * w for _ in range(h)],
+]
 
-	while q:
-		cur, cur_dist = q.pop(0)
+# TODO is this right?
 
-		if pcurdist != cur_dist:
-			q = list(set(q))
-			pcurdist = cur_dist
+def in_prison(x, y):
+	try:
+		return f[y - 1][x] == "#" and f[y + 1][x] == "#" and f[y][x - 1] == "#" and f[y][x + 1] == "#"
 
-		if cur_dist >= steps:
+	except:
+		return False
+
+for y in range(len(f)):
+	shift = -1 if y % 2 else 0
+
+	for x in range(-shift, len(f[y]) + shift, 2):
+		if f[y][x] in 'S.' and not in_prison(x, y):
+			full_poss[0] += 1
+			grid_poss[0][y][x] = True
+
+	shift = 0 if y % 2 else -1
+
+	for x in range(-shift, len(f[y]) + shift, 2):
+		if f[y][x] in 'S.' and not in_prison(x, y):
+			full_poss[1] += 1
+			grid_poss[1][y][x] = True
+
+# steps = 26501365
+steps = 5000
+choose_i = steps % 2
+chosen_grid_poss = grid_poss[choose_i]
+
+# right_full_squares = max(0, (steps - (w - starting_point[0] - 1) - w) // w)
+# left_full_squares = max(0, (steps - starting_point[0] - w) // w)
+# down_full_squares = max(0, (steps - (h - starting_point[1] - 1) - h) // h)
+# up_full_squares = max(0, (steps - starting_point[1] - h) // h)
+# 
+# # +1 cuz count middle square
+# 
+# horz_full_squares = left_full_squares + right_full_squares + 1
+# vert_full_squares = up_full_squares + down_full_squares + 1
+
+radius_full_squares = max(0, (steps - starting_point[0] - w) // w)
+diam_full_squares = 2 * radius_full_squares + 1
+ 
+s = math.ceil(diam_full_squares * diam_full_squares / 2) // 2 * full_poss[choose_i]
+s += (math.ceil(diam_full_squares * diam_full_squares / 2) // 2 + 1) * full_poss[not choose_i]
+
+# edge fillers
+# since # steps is a multiple of our grid size, we just have one edge filler to deal with
+
+primary_edge = [0, 0]
+v = 1
+
+for y in range(h):
+	for x in range(w):
+		dx = w - starting_point[0] + radius_full_squares * w + x - w
+		dy = h - starting_point[1] + y
+
+		dist = abs(dx + dy)
+
+		if v: print("X" if dist <= steps else " ", end="")
+
+		if True: # dist <= steps:
+			for i in range(2):
+				primary_edge[i] += grid_poss[i][y][x]
+				primary_edge[i] += grid_poss[i][h - y - 1][x]
+				primary_edge[i] += grid_poss[i][y][w - x - 1]
+				primary_edge[i] += grid_poss[i][h - y - 1][w - x - 1]
+
+	if v: print()
+
+s += primary_edge[not choose_i] * (radius_full_squares // 2)
+s += primary_edge[choose_i] * (radius_full_squares // 2 + 1)
+
+# corners
+
+corners = [0, 0]
+
+for y in range(h):
+	for x in range(w):
+		if v: print("X" if abs((x - w // 2) + y) > h // 2 else " ", end="")
+
+		if abs((x - w // 2) + y) > h // 2:
 			continue
 
-		for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-			x, y = cur[0] + dx, cur[1] + dy
+		for i in range(2):
+			corners[i] += grid_poss[i][y][x]
+			corners[i] += grid_poss[i][h - y - 1][x]
+			corners[i] += grid_poss[i][y][w - x - 1]
+			corners[i] += grid_poss[i][h - y - 1][w - x - 1]
 
-			if f[y % h][x % w] in ".S":
-				q.append(((x, y), cur_dist + 1))
+	if v: print()
 
-				if cur_dist + 1 == steps:
-					right_dist.add((x, y))
+s += corners[choose_i]
 
-	print(steps, len(right_dist))
-	v.append(len(right_dist))
+# how many full squares?
 
-"""
-for j in range(len(f)):
-	for i in range(len(f[j])):
-		if f[j][i] == "." or f[j][i] == "S": print("O" if (i, j) in right_dist else ".", end="")
-		if f[j][i] == "#": print("#", end="")
-
-	print()
-"""
-
-p = np.polyfit(vx, v, 2)
-x = 26501365
-
-print(p[0] * x ** 2 + p[1] * x + p[2])
-
-plt.plot(v)
-plt.show()
+print(s)
