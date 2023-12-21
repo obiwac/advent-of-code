@@ -34,16 +34,22 @@ for i in to_add:
 
 low_count = 0
 high_count = 0
+presses = 0
 
-for _ in range(1000):
+for _ in range(10000000):
 	q = [("broadcaster", False, "button")]
+	presses += 1
 
 	while q:
 		name, is_high, prev = q.pop(0)
 		kind, ins, out, flipflop_state, mem = d[name]
 
 		is_high_name = "high" if is_high else "low"
-		print(f"{prev} -{is_high_name}-> {name}")
+		# print(f"{prev} -{is_high_name}-> {name}")
+
+		if name == "rx" and not is_high:
+			print(presses)
+			exit()
 
 		low_count += not is_high
 		high_count += is_high
