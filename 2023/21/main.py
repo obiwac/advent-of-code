@@ -1,4 +1,5 @@
-import math
+from matplotlib import pyplot as plt
+import numpy as np
 
 *f, = map(list, open(0).read().strip().split('\n'))
 w, h = len(f[0]), len(f)
@@ -10,100 +11,50 @@ for i in range(len(f)):
 		if f[i][j] == 'S':
 			starting_point = (j, i)
 
-full_poss = [0, 0]
+vx = []
+v = []
 
-grid_poss = [
-	[[False] * w for _ in range(h)],
-	[[False] * w for _ in range(h)],
-]
+for steps in range(1, 100):
+	vx.append(steps)
+	q = [(starting_point, 0)]
+	right_dist = set()
+	pcurdist = -1
 
-for y in range(len(f)):
-	shift = -1 if y % 2 else 0
+	while q:
+		cur, cur_dist = q.pop(0)
 
-	for x in range(-shift, len(f[y]) + shift, 2):
-		if f[y][x] in 'S.':
-			full_poss[0] += 1
-			grid_poss[0][y][x] = True
+		if pcurdist != cur_dist:
+			q = list(set(q))
+			pcurdist = cur_dist
 
-	shift = 0 if y % 2 else -1
+		if cur_dist >= steps:
+			continue
 
-	for x in range(-shift, len(f[y]) + shift, 2):
-		if f[y][x] in 'S.':
-			full_poss[1] += 1
-			grid_poss[1][y][x] = True
+		for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+			x, y = cur[0] + dx, cur[1] + dy
 
-# steps = 26501365
-steps = 5000
-choose_i = steps % 2
-chosen_grid_poss = grid_poss[choose_i]
+			if f[y % h][x % w] in ".S":
+				q.append(((x, y), cur_dist + 1))
 
-# right_full_squares = max(0, (steps - (w - starting_point[0] - 1) - w) // w)
-# left_full_squares = max(0, (steps - starting_point[0] - w) // w)
-# down_full_squares = max(0, (steps - (h - starting_point[1] - 1) - h) // h)
-# up_full_squares = max(0, (steps - starting_point[1] - h) // h)
-# 
-# # +1 cuz count middle square
-# 
-# horz_full_squares = left_full_squares + right_full_squares + 1
-# vert_full_squares = up_full_squares + down_full_squares + 1
+				if cur_dist + 1 == steps:
+					right_dist.add((x, y))
 
-radius_full_squares = max(0, (steps - starting_point[0] - w) // w)
-diam_full_squares = 2 * radius_full_squares + 1
- 
-s = math.ceil(diam_full_squares * diam_full_squares / 2) * full_poss[choose_i]
-
-# edge fillers
+	print(steps, len(right_dist))
+	v.append(len(right_dist))
 
 """
-xx.......
-xxx......
-xxxx.....
-###xx....
-###xxx...
-###xxxx..
-######xx.
-######xxx
-######xxxx
-#########xx
-#########xxx
-#########xx
-######xxxx
-######xxx
-######xx
+for j in range(len(f)):
+	for i in range(len(f[j])):
+		if f[j][i] == "." or f[j][i] == "S": print("O" if (i, j) in right_dist else ".", end="")
+		if f[j][i] == "#": print("#", end="")
+
+	print()
 """
 
-primary_edge = 0
-secondary_edge = 4 * w * h / 4
+p = np.polyfit(vx, v, 2)
+x = 26501365
 
-# for y in range(h):
-# 	for x in range(w):
-# 		dx = w - starting_point[0] + right_full_squares * w + x - w
-# 		dy = h - starting_point[1] + h + y
-# 
-# 		dist = abs(dx + dy)
-# 
-# 		if dist < steps:
-# 			primary_edge += chosen_grid_poss[y][x]
-# 			primary_edge += chosen_grid_poss[h - y - 1][x]
-# 			primary_edge += chosen_grid_poss[y][w - x - 1]
-# 			primary_edge += chosen_grid_poss[h - y - 1][w - x - 1]
-# 
-# for y in range(h):
-# 	for x in range(w):
-# 		dx = w - starting_point[0] + right_full_squares * w + x - w
-# 		dy = h - starting_point[1] + y
-# 
-# 		dist = abs(dx + dy)
-# 
-# 		if dist < steps:
-# 			secondary_edge += chosen_grid_poss[y][x]
-# 			secondary_edge += chosen_grid_poss[h - y - 1][x]
-# 			secondary_edge += chosen_grid_poss[y][w - x - 1]
-# 			secondary_edge += chosen_grid_poss[h - y - 1][w - x - 1]
+print(p[0] * x ** 2 + p[1] * x + p[2])
 
-# s += primary_edge * radius_full_squares
-# s += secondary_edge * radius_full_squares
-
-# how many full squares?
-
-print(s)
+plt.plot(v)
+plt.show()
