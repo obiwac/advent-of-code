@@ -1,5 +1,6 @@
 from decimal import Decimal, getcontext
 getcontext().prec = 50
+from z3 import Solver, Int
 
 *f, = map(str, open(0).read().strip().split('\n'))
 
@@ -69,7 +70,35 @@ for i in range(len(lines)):
 		# mi, ma = 7, 27
 
 		if x >= mi and y >= mi and x <= ma and y <= ma:
-			print(pa, pb)
 			s += 1
 
 print(s)
+
+# part 2
+
+solver = Solver()
+
+stone_px = Int('stone_px')
+stone_py = Int('stone_py')
+stone_pz = Int('stone_pz')
+
+stone_vx = Int('stone_vx')
+stone_vy = Int('stone_vy')
+stone_vz = Int('stone_vz')
+
+for i, line in enumerate(lines):
+	p, v = line
+	*p, = map(int, p)
+	*v, = map(int, v)
+
+	time = Int(f"{i}time")
+
+	solver.add(stone_px + time * stone_vx == p[0] + v[0] * time)
+	solver.add(stone_py + time * stone_vy == p[1] + v[1] * time)
+	solver.add(stone_pz + time * stone_vz == p[2] + v[2] * time)
+
+	solver.add(time > 0) # must be in the future
+
+solver.check()
+model = solver.model()
+print(sum(map(lambda x: model.eval(x).as_long(), (stone_px, stone_py, stone_pz))))
