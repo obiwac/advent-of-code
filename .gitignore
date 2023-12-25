@@ -8,3 +8,4 @@ runner.py
 __pycache__
 *.gv
 *.pdf
+build
