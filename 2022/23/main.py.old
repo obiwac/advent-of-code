@@ -1,0 +1,116 @@
+import math
+from itertools import chain
+from itertools import accumulate
+from functools import reduce
+from collections import Counter
+from collections import defaultdict
+from copy import deepcopy
+
+import numpy as np
+import heapq
+
+*f, = map(list, open(0).read().strip().split('\n'))
+*f, = map(lambda x: ['.'] * 10 + x + ['.'] * 10, f)
+w = len(f[0])
+f = [['.'] * w for _ in range(10)] + f + [['.'] * w for _ in range(10)]
+h = len(f)
+
+def iself(y, x):
+	if y not in range(len(f)):
+		return True
+
+	if x not in range(len(f[y])):
+		return True
+
+	return f[y][x] == '#'
+
+def isspace(y, x):
+	if y not in range(len(f)):
+		return True
+
+	if x not in range(len(f[y])):
+		return True
+
+	return f[y][x] == '.'
+
+directions = [
+	"((y - 1, x), (y - 1, x - 1), (y - 1, x + 1))", # north
+	"((y + 1, x), (y + 1, x - 1), (y + 1, x + 1))", # south
+	"((y, x - 1), (y - 1, x - 1), (y + 1, x - 1))", # west
+	"((y, x + 1), (y - 1, x + 1), (y + 1, x + 1))", # east
+]
+
+prev = 0
+
+for i in range(10000000):
+	print("round", i)
+	proposals = []
+
+	print("1")
+
+	for y in range(h):
+		for x in range(w):
+			if f[y][x] == '#': # elf
+				if isspace(y - 1, x) and isspace(y + 1, x) and isspace(y, x - 1) and isspace(y, x + 1) and isspace(y + 1, x + 1) and isspace(y - 1, x - 1) and isspace(y + 1, x - 1) and isspace(y - 1, x + 1):
+					continue
+
+				for a, b, c in map(eval, directions):
+					if not iself(*a) and not iself(*b) and not iself(*c):
+						proposals.append(((y, x), a))
+						break
+
+	for elf, want in proposals:
+		# is proposal exclusive?
+
+		if [*map(lambda x: x[1], proposals)].count(want) == 1:
+			f[elf[0]][elf[1]] = '.'
+			f[want[0]][want[1]] = '#'
+
+	#print("===========", directions[0])
+	directions = directions[1:] + directions[:1]
+
+	#for l in f:
+	#	print("".join(l))
+
+	#if i == 9: break
+	#continue
+	ha = hash("".join(map("".join, f)))
+
+	if ha == prev:
+		break
+
+	prev = ha
+	continue
+
+	for l in f:
+		print("".join(l))
+
+	if i == 1: break
+	print("===========")
+
+minx = 999999
+maxx = -999999
+miny = 999999
+maxy = -999999
+
+for y in range(len(f)):
+	for x in range(len(f[0])):
+		if f[y][x] == '#':
+			minx = min(minx, x)
+			miny = min(miny, y)
+			maxx = max(maxx, x)
+			maxy = max(maxy, y)
+
+s = 0
+
+for y in range(len(f)):
+	for x in range(len(f[0])):
+		if x not in range(minx, maxx + 1):
+			continue
+		if y not in range(miny, maxy + 1):
+			continue
+		s += f[y][x] == '.'
+
+for l in f:
+	print("".join(l))
+print(i, s)
