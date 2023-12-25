@@ -90,10 +90,12 @@ while 1:
 
 	for i in range(0, len(seeds), 2):
 		if seed >= seeds[i] and seed < seeds[i] + seeds[i + 1]:
-			print(location, seed)
+			print(location)
 			exit()
 
 	location += 1
 
 	if location % 100000 == 0:
 		print(location)
+
+__import__("time").sleep(0.1)

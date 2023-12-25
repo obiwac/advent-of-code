@@ -6,8 +6,8 @@ for l in f:
 	m, n = l.split()
 	*n, = map(int, n.split(','))
 
-	n = n * 5
-	m = "?".join([m] * 5)
+	# n = n * 5
+	# m = "?".join([m] * 5)
 
 	"""
 	exp = m.count("?")
@@ -53,6 +53,8 @@ for l in f:
 
 	holes = where_hole("?#", ".")
 	damaged = where_hole("#", "?.")
+
+	print(holes, damaged)
 
 	must_mask = 0
 
