@@ -4,3 +4,7 @@
 *.o
 runner.py
 *.core
+*.log
+__pycache__
+*.gv
+*.pdf
