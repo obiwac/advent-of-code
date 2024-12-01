@@ -19,3 +19,17 @@ for i in range(len(x)):
 	s += abs(x[i] - y[i])
 
 print(s)
+
+# Part 2.
+
+from collections import Counter
+
+y = Counter(y)
+s = 0
+
+for z in x:
+	if z in y:
+		count = y[z]
+		s += count * z
+
+print(s)
