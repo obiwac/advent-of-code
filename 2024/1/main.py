@@ -13,11 +13,7 @@ for l in f:
 x.sort()
 y.sort()
 
-s = 0
-
-for i in range(len(x)):
-	s += abs(x[i] - y[i])
-
+s = sum(abs(x[i] - y[i]) for i in range(len(x)))
 print(s)
 
 # Part 2.
@@ -29,7 +25,6 @@ s = 0
 
 for z in x:
 	if z in y:
-		count = y[z]
-		s += count * z
+		s += y[z] * z
 
 print(s)
