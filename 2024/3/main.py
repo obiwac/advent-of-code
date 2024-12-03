@@ -1,6 +1,7 @@
 f = open(0).readlines()
 
-s = 0
+s1 = 0
+s2 = 0
 do = True
 
 for l in f:
@@ -11,9 +12,6 @@ for l in f:
 
 		if l[i:i + 7] == "don't()":
 			do = False
-			continue
-
-		if not do:
 			continue
 
 		v = l[i:].split(",")
@@ -41,6 +39,10 @@ for l in f:
 		except ValueError:
 			continue
 
-		s += a * b
+		s1 += a * b
 
-print(s)
+		if not do:
+			s2 += a * b
+
+print(s1)
+print(s2)
