@@ -1,9 +1,21 @@
 f = open(0).readlines()
 
 s = 0
+do = True
 
 for l in f:
 	for i in range(len(l)):
+		if l[i:i + 4] == "do()":
+			do = True
+			continue
+
+		if l[i:i + 7] == "don't()":
+			do = False
+			continue
+
+		if not do:
+			continue
+
 		v = l[i:].split(",")
 
 		if len(v) < 2:
