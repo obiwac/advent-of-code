@@ -1,8 +1,8 @@
 f = open(0).read().split("\n")
 *f, = map(list, f)
 
-guard = [0, 0]
-guard_dir = [-1, 0]
+initial_guard = [0, 0]
+initial_guard_dir = [-1, 0]
 path = set()
 obstacles = set()
 
@@ -13,41 +13,67 @@ for i in range(len(f)):
 
 		if f[i][j] == "^":
 			path.add((i, j))
-			guard = [i, j]
+			initial_guard = [i, j]
 
-print(guard)
+print(initial_guard)
 
-while True:
-	prev_guard = list(guard)
+def in_loop(new_obstacle):
+	guard = list(initial_guard)
+	guard_dir = list(initial_guard_dir)
+	states = set({(*guard, *guard_dir)})
+	path = set()
 
-	guard[0] += guard_dir[0]
-	guard[1] += guard_dir[1]
+	while True:
+		prev_guard = list(guard)
 
-	if tuple(guard) in obstacles:
-		guard = prev_guard
+		guard[0] += guard_dir[0]
+		guard[1] += guard_dir[1]
 
-		if guard_dir == [-1, 0]:
-			guard_dir = [0, 1]
+		if tuple(guard) in obstacles or tuple(guard) == new_obstacle:
+			guard = prev_guard
 
-		elif guard_dir == [1, 0]:
-			guard_dir = [0, -1]
+			if guard_dir == [-1, 0]:
+				guard_dir = [0, 1]
 
-		elif guard_dir == [0, -1]:
-			guard_dir = [-1, 0]
+			elif guard_dir == [1, 0]:
+				guard_dir = [0, -1]
 
-		elif guard_dir == [0, 1]:
-			guard_dir = [1, 0]
+			elif guard_dir == [0, -1]:
+				guard_dir = [-1, 0]
 
-		else:
-			assert False
+			elif guard_dir == [0, 1]:
+				guard_dir = [1, 0]
 
-		continue
+			else:
+				assert False
 
-	if guard[0] < 0 or guard[0] > len(f) - 1 or guard[1] < 0 or guard[1] > len(f[0]) - 1:
-		break
+			continue
 
-	path.add(tuple(guard))
+		if guard[0] < 0 or guard[0] > len(f) - 1 or guard[1] < 0 or guard[1] > len(f[0]) - 1:
+			break
 
+		state = (*guard, *guard_dir,)
+
+		if state in states:
+			return True
+
+		states.add(state)
+		path.add(tuple(guard))
+
+	return False
+
+s = 0
+
+for i in range(len(f)):
+	for j in range(len(f[i])):
+		if f[i][j] == ".":
+			if in_loop((i, j)):
+				s += 1
+				print("Loop at", i, j)
+
+print(s)
+
+"""
 done = 0
 
 for i in range(len(f)):
@@ -55,7 +81,7 @@ for i in range(len(f)):
 		if (i, j) in obstacles:
 			print("#", end="")
 
-		elif [i, j] == guard:
+		elif [i, j] == initial_guard:
 			print("^", end="")
 
 		elif (i, j) in path:
@@ -67,4 +93,5 @@ for i in range(len(f)):
 	
 	print()
 
-print(done)
+print(len(path), done)
+"""
