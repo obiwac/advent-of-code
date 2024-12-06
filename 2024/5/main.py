@@ -37,25 +37,27 @@ def gorder(set_):
 
 	return gorder
 
-s = 0
+for p in (1, 2):
+	s = 0
 
-for o in f[1].strip().split("\n"):
-	*a, = map(int, o.split(","))
+	for o in f[1].strip().split("\n"):
+		*a, = map(int, o.split(","))
 
-	translate = {}
-	translate_b = {}
+		translate = {}
+		translate_b = {}
 
-	for i, o in enumerate(gorder(a)):
-		translate[o] = i
-		translate_b[i] = o
+		for i, o in enumerate(gorder(a)):
+			translate[o] = i
+			translate_b[i] = o
 
-	*translated, = map(lambda x: translate[x], a)
-	*sort, = sorted(translated)
-	if sort == translated:
-		continue
+		*translated, = map(lambda x: translate[x], a)
+		*sort, = sorted(translated)
 
-	*untranslated, = map(lambda x: translate_b[x], sort)
+		if (p == 1 and sort != translated) or (p == 2 and sort == translated):
+			continue
 
-	s += untranslated[len(untranslated) // 2]
+		*untranslated, = map(lambda x: translate_b[x], sort)
 
-print(s)
+		s += untranslated[len(untranslated) // 2]
+
+	print(s)
