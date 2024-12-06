@@ -1,4 +1,4 @@
-f = open(0).read().split("\n")
+f = open(0).read().strip().split("\n")
 *f, = map(list, f)
 
 initial_guard = [0, 0]
@@ -15,9 +15,7 @@ for i in range(len(f)):
 			path.add((i, j))
 			initial_guard = [i, j]
 
-print(initial_guard)
-
-def in_loop(new_obstacle):
+def sim(new_obstacle):
 	guard = list(initial_guard)
 	guard_dir = list(initial_guard_dir)
 	states = set({(*guard, *guard_dir)})
@@ -55,26 +53,16 @@ def in_loop(new_obstacle):
 		state = (*guard, *guard_dir,)
 
 		if state in states:
-			return True
+			return True, path
 
 		states.add(state)
 		path.add(tuple(guard))
 
-	return False
+	return False, path
 
-s = 0
+# Part 1.
 
-for i in range(len(f)):
-	for j in range(len(f[i])):
-		if f[i][j] == ".":
-			if in_loop((i, j)):
-				s += 1
-				print("Loop at", i, j)
-
-print(s)
-
-"""
-done = 0
+path = sim((0, 0))[1]
 
 for i in range(len(f)):
 	for j in range(len(f[i])):
@@ -85,7 +73,6 @@ for i in range(len(f)):
 			print("^", end="")
 
 		elif (i, j) in path:
-			done += 1
 			print("X", end="")
 
 		else:
@@ -93,5 +80,17 @@ for i in range(len(f)):
 	
 	print()
 
-print(len(path), done)
-"""
+print(len(path))
+
+# Part 2.
+
+s = 0
+
+for i in range(len(f)):
+	for j in range(len(f[i])):
+		if f[i][j] == ".":
+			if sim((i, j))[0]:
+				s += 1
+				print("Loop at", i, j)
+
+print(s)
