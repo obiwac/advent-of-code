@@ -37,9 +37,6 @@ def gorder(set_):
 
 	return gorder
 
-# orderings
-# translate
-
 s = 0
 
 for o in f[1].strip().split("\n"):
@@ -54,7 +51,7 @@ for o in f[1].strip().split("\n"):
 
 	*translated, = map(lambda x: translate[x], a)
 	*sort, = sorted(translated)
-	if sort != translated:
+	if sort == translated:
 		continue
 
 	*untranslated, = map(lambda x: translate_b[x], sort)
