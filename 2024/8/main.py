@@ -28,38 +28,22 @@ for freq in freqs:
 				antinodes.add((i, j))
 				return 0
 
-			acc_y = pos1[0]
-			acc_x = pos1[1]
+			for acc_y, acc_x, m in (pos1 + (1,), pos2 + (-1,)):
+				while 1:
+					if try_add(acc_y, acc_x):
+						break
 
-			while 1:
-				if try_add(acc_y, acc_x):
-					break
-
-				acc_y += dy
-				acc_x += dx
-
-			acc_y = pos2[0]
-			acc_x = pos2[1]
-
-			while 1:
-				if try_add(acc_y, acc_x):
-					break
-
-				acc_y -= dy
-				acc_x -= dx
+					acc_y += m * dy
+					acc_x += m * dx
 	
-done = 0
-
 for i in range(len(f)):
 	for j in range(len(f[i])):
-		#if f[i][j] != ".":
-		#	print(f[i][j], end="")
-		if (i, j) in antinodes:
-			done += 1
+		if f[i][j] != ".":
+			print(f[i][j], end="")
+		elif (i, j) in antinodes:
 			print("X", end="")
 		else:
 			print(f[i][j], end="")
 	print()
 
 print(len(antinodes))
-print(done)
