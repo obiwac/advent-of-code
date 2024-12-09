@@ -21,31 +21,24 @@ leftmost_free_space = 0
 blocks = []
 
 for file in files[::-1]:
-	while True:
-		if file[1] == 0 or leftmost_free_space >= len(free_spaces) or free_spaces[leftmost_free_space][1] > file[2]:
+	for i in range(leftmost_free_space, len(free_spaces)):
+		if file[1] == 0 or free_spaces[i][1] > file[2]:
 			break
 
-		if file[1] < free_spaces[leftmost_free_space][0]:
-			break
+		if file[1] > free_spaces[i][0]:
+			continue
 
-		d = min(file[1], free_spaces[leftmost_free_space][0])
+		d = min(file[1], free_spaces[i][0])
 		file[1] -= d
-		free_spaces[leftmost_free_space][0] -= d
-		blocks.append((free_spaces[leftmost_free_space][1], d, file[0]))
-		free_spaces[leftmost_free_space][1] += d
+		free_spaces[i][0] -= d
+		blocks.append((free_spaces[i][1], d, file[0]))
+		free_spaces[i][1] += d
 
-		if free_spaces[leftmost_free_space][0] == 0:
-			leftmost_free_space += 1
+		if free_spaces[i][0] == 0:
+			leftmost_free_space += 0
 
 	if file[1] > 0:
 		blocks.append([file[2], file[1], file[0]])
-
-# compacted = [0] * 100
-# 
-# for b in blocks:
-# 	compacted[b[0]:b[0] + b[1]] = [b[2]] * b[1]
-# 
-# print("".join(map(str, compacted)))
 
 s = 0
 
