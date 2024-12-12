@@ -6,7 +6,9 @@ for i in range(len(f)):
 		types.add(f[i][j])
 
 visited = [[False for _ in range(len(f[0]))] for _ in range(len(f))]
-s = 0
+
+s1 = 0
+s2 = 0
 
 for i in range(len(f)):
 	for j in range(len(f[0])):
@@ -17,6 +19,7 @@ for i in range(len(f)):
 
 		q = [(i, j, -1)]
 		area = 0
+		perimiter = 0
 		sides = {}
 
 		while 1:
@@ -26,6 +29,8 @@ for i in range(len(f)):
 			ii, jj, side = q.pop(0)
 
 			if ii < 0 or jj < 0 or ii >= len(f) or jj >= len(f[0]) or f[ii][jj] != f[i][j]:
+				perimiter += 1
+
 				if side <= 1:
 					if (side, ii) not in sides:
 						sides[(side, ii)] = set()
@@ -63,7 +68,9 @@ for i in range(len(f)):
 
 				prev = k
 
-		print("Type", f[i][j], ":", area, "cells,", side_count, "sides")
-		s += area * side_count
+		print("Type", f[i][j], ":", area, "cells,", side_count, "sides, permimeter", perimiter)
 
-print(s)
+		s1 += area * perimiter
+		s2 += area * side_count
+
+print(s1, s2)
