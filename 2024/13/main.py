@@ -1,30 +1,32 @@
 machines = open(0).read().strip().split("\n\n")
-s = 0
 
-for machine in machines:
-	a, b, prize = machine.split("\n")
+for p in (1, 2):
+	s = 0
 
-	ax, ay = a.split()[2:]
-	ax = int(ax[2: -1])
-	ay = int(ay[2:])
+	for machine in machines:
+		a, b, prize = machine.split("\n")
 
-	bx, by = b.split()[2:]
-	bx = int(bx[2: -1])
-	by = int(by[2:])
+		ax, ay = a.split()[2:]
+		ax = int(ax[2: -1])
+		ay = int(ay[2:])
 
-	px, py = prize.split()[1:]
-	px = int(px[2: -1])
-	py = int(py[2:])
+		bx, by = b.split()[2:]
+		bx = int(bx[2: -1])
+		by = int(by[2:])
 
-	px += 10000000000000
-	py += 10000000000000
+		px, py = prize.split()[1:]
+		px = int(px[2: -1])
+		py = int(py[2:])
 
-	b = (py - ay * px / ax) / (by - ay * bx / ax)
-	a = (px - bx * b) / ax
+		px += (p == 2) * 10000000000000
+		py += (p == 2) * 10000000000000
 
-	eps = 1e-3
+		b = (py - ay * px / ax) / (by - ay * bx / ax)
+		a = (px - bx * b) / ax
 
-	if abs(round(a) - a) < eps and abs(round(b) - b) < eps:
-		s += int(a * 3 + b)
+		eps = 1e-3
 
-print(s)
+		if abs(round(a) - a) < eps and abs(round(b) - b) < eps:
+			s += int(a * 3 + b)
+
+	print(s)
