@@ -1,5 +1,3 @@
-from sympy import symbols, Eq, solve
-
 machines = open(0).read().strip().split("\n\n")
 s = 0
 
@@ -21,17 +19,12 @@ for machine in machines:
 	px += 10000000000000
 	py += 10000000000000
 
-	a, b = symbols(["a", "b"])
+	b = (py - ay * px / ax) / (by - ay * bx / ax)
+	a = (px - bx * b) / ax
 
-	system = [
-		Eq(ax * a + bx * b, px),
-		Eq(ay * a + by * b, py),
-	]
+	eps = 1e-3
 
-	sol = solve(system, [a, b])
-	eps = 1e-6
-
-	if sol[a] % 1 < eps and sol[b] % 1 < eps:
-		s += sol[a] * 3 + sol[b]
+	if abs(round(a) - a) < eps and abs(round(b) - b) < eps:
+		s += int(a * 3 + b)
 
 print(s)
