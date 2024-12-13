@@ -1,3 +1,5 @@
+from sympy import symbols, Eq, solve
+
 machines = open(0).read().strip().split("\n\n")
 s = 0
 
@@ -16,17 +18,20 @@ for machine in machines:
 	px = int(px[2: -1])
 	py = int(py[2:])
 
-	m = float("inf")
+	px += 10000000000000
+	py += 10000000000000
 
-	for i in range(100):
-		for j in range(100):
-			if i * ax + j * bx == px and i * ay + j * by == py:
-				cost = 3 * i + 1 * j
+	a, b = symbols(["a", "b"])
 
-				if cost < m:
-					m = cost
+	system = [
+		Eq(ax * a + bx * b, px),
+		Eq(ay * a + by * b, py),
+	]
 
-	if m < float("inf"):
-		s += m
+	sol = solve(system, [a, b])
+	eps = 1e-6
+
+	if sol[a] % 1 < eps and sol[b] % 1 < eps:
+		s += sol[a] * 3 + sol[b]
 
 print(s)
