@@ -1,4 +1,4 @@
-from functools import cache
+import random
 
 *f, = map(list, open(0).read().strip().split("\n"))
 
@@ -19,58 +19,62 @@ for i in range(len(f)):
 
 assert start is not None
 assert end is not None
+assert start != end
 
-DIRS = ((0, 1), (0, -1), (1, 0), (-1, 0))
-q = [start + (2,)]
-dist = [[[float("inf")] * len(f) for _ in range(len(f[0]))] for _ in range(4)]
+seats = set()
+m_printed = False
 
-for i in range(4):
-	dist[i][start[0]][start[1]] = 0
+for _ in range(20):
+	DIRS = ((0, 1), (0, -1), (1, 0), (-1, 0))
+	q = [start + (2,)]
+	dist = [[[float("inf")] * len(f) for _ in range(len(f[0]))] for _ in range(4)]
+	prev: list[list[list[None | tuple]]] = [[[None] * len(f) for _ in range(len(f[0]))] for _ in range(4)]
 
-while q:
-	cx, cy, cd = q.pop(0)
+	for i in range(4):
+		dist[i][start[0]][start[1]] = 0
 
-	for d, (dx, dy) in enumerate(DIRS):
-		nx, ny = cx + dx, cy + dy
-		cost = 1 + (1000 if cd != d else 0)
+	while q:
+		cx, cy, cd = q.pop(0)
+		enum = list(enumerate(DIRS))
+		random.shuffle(enum)
 
-		if 0 <= nx < len(f) and 0 <= ny < len(f[0]) and (nx, ny) not in walls and dist[cd][cx][cy] + cost < dist[d][nx][ny]:
+		for d, (dx, dy) in enum:
+			nx, ny = cx + dx, cy + dy
+			cost = 1 + (1000 if cd != d else 0)
+
+			if not (0 <= nx < len(f) and 0 <= ny < len(f[0])) or (nx, ny) in walls:
+				continue
+
+			if dist[cd][cx][cy] + cost > dist[d][nx][ny]:
+				continue
+
 			dist[d][nx][ny] = dist[cd][cx][cy] + cost
+			prev[d][nx][ny] = (cx, cy, cd)
+
 			q.append((nx, ny, d))
 
-print(min(dist[i][end[0]][end[1]] for i in range(4)))
+	m = float("inf")
+	di = 0
 
-"""
-states = {}
+	for i in range(4):
+		d = dist[i][end[0]][end[1]]
 
-def dfs(cur, cost, path = []):
-	if tuple(path) in states:
-		return states[tuple(path)]
+		if d < m:
+			m = d
+			di = i
 
-	cx, cy = cur
-	candidates = []
+	assert m != float("inf")
 
-	for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-		nx, ny = cx + dx, cy + dy
-		pdx, pdy = path[-1][0] - cx, path[-1][1] - cy
+	if not m_printed:
+		m_printed = True
+		print("Part 1:", m)
 
-		if pdx == -dx or pdy == -dy: # Disallow 180 deg turns.
-			continue
+	u = end + (di,)
 
-		if 0 <= nx < len(f) and 0 <= ny < len(f[0]) and (nx, ny) not in walls and (nx, ny) not in path:
-			nc = cost + 1
+	while u:
+		seats.add(u[:2])
+		u = prev[u[2]][u[0]][u[1]]
 
-			if (dx, dy) != (pdx, pdy):
-				nc += 1000
+	print("Part 2 candidate:", len(seats))
 
-			if (nx, ny) == end:
-				print(len(path) + 1)
-				exit()
-
-			candidates.append(dfs((nx, ny), nc, path + [(nx, ny)]))
-
-	states[tuple(path)] = min(candidates, default=float("inf"))
-	return states[tuple(path)]
-
-print(dfs(start, 0))
-"""
+print("Part 2:", len(seats))
