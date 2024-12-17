@@ -79,3 +79,28 @@ while ip < len(program):
 		registers["C"] = int(registers["A"] / (2 ** operand))
 
 print(",".join(map(str, out)))
+
+program.reverse()
+candidates = []
+
+def dfs(base = 0, depth = 0):
+	for o in range(base, base + 8):
+		A = o
+
+		B = A & 0b111
+		B = B ^ 0b101
+		C = A >> B
+		B = B ^ 0b110
+		B = B ^ C
+
+		A = A // 8
+
+		if B & 0b111 == program[depth]:
+			if depth + 1 == len(program):
+				candidates.append(o)
+				continue
+
+			dfs(o * 8, depth + 1)
+
+dfs()
+print(min(candidates))
