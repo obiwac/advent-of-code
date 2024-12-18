@@ -1,32 +1,39 @@
-*f, = map(lambda x: tuple(map(int, x.split(","))), open(0).read().strip().split("\n"))
-f = set(f[:1024])
+*o, = map(lambda x: tuple(map(int, x.split(","))), open(0).read().strip().split("\n"))
 
-W, H = 71, 71
+for i in range(1024, len(o)):
+	of = o[:i]
+	f = set(of)
 
-q = [(0, 0)]
-dist = {(0, 0): 0}
+	W, H = 71, 71
 
-while q:
-	cx, cy = q.pop(0)
+	q = [(0, 0)]
+	dist = {(0, 0): 0}
 
-	for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-		nx, ny = cx + dx, cy + dy
+	while q:
+		cx, cy = q.pop(0)
 
-		if 0 <= nx < W and 0 <= ny < H and (nx, ny) not in f:
-			cost = dist[(cx, cy)] + 1
+		for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+			nx, ny = cx + dx, cy + dy
 
-			if (nx, ny) in dist and cost >= dist[(nx, ny)]:
-				continue
+			if 0 <= nx < W and 0 <= ny < H and (nx, ny) not in f:
+				cost = dist[(cx, cy)] + 1
 
-			dist[(nx, ny)] = cost
-			q.append((nx, ny))
+				if (nx, ny) in dist and cost >= dist[(nx, ny)]:
+					continue
 
-for i in range(H):
-	for j in range(W):
-		if (j, i) in f:
-			print("#", end="")
-		else:
-			print(".", end="")
-	print()
+				dist[(nx, ny)] = cost
+				q.append((nx, ny))
 
-print(dist[(W - 1, H - 1)])
+	for i in range(H):
+		for j in range(W):
+			if (j, i) in f:
+				print("#", end="")
+			else:
+				print(".", end="")
+		print()
+
+	if (W - 1, H - 1) not in dist:
+		print(of[-1])
+		break
+
+	print(dist[(W - 1, H - 1)])
