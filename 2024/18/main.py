@@ -24,6 +24,7 @@ for i in range(1024, len(o)):
 				dist[(nx, ny)] = cost
 				q.append((nx, ny))
 
+	"""
 	for i in range(H):
 		for j in range(W):
 			if (j, i) in f:
@@ -31,9 +32,11 @@ for i in range(1024, len(o)):
 			else:
 				print(".", end="")
 		print()
+	"""
 
 	if (W - 1, H - 1) not in dist:
-		print(of[-1])
+		print(",".join(map(str, of[-1])))
 		break
 
-	print(dist[(W - 1, H - 1)])
+	if i == 1024:
+		print(dist[(W - 1, H - 1)])
