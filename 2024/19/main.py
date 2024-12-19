@@ -6,6 +6,7 @@ patterns = patterns.split(", ")
 designs = designs.split("\n")
 
 poss = 0
+s = 0
 
 @cache
 def is_poss(design):
@@ -19,8 +20,25 @@ def is_poss(design):
 
 	return False
 
+@cache
+def design_count(design):
+	if len(design) == 0:
+		return 1
+
+	count = 0
+
+	for pattern in patterns:
+		if design.startswith(pattern):
+			count += design_count(design[len(pattern):])
+
+	return count
+
 for design in designs:
 	print(design)
-	poss += is_poss(design)
+
+	if is_poss(design):
+		poss += 1
+		s += design_count(design)
 
 print(poss)
+print(s)
