@@ -9,19 +9,7 @@ poss = 0
 s = 0
 
 @cache
-def is_poss(design):
-	if len(design) == 0:
-		return True
-
-	for pattern in patterns:
-		if design.startswith(pattern):
-			if is_poss(design[len(pattern):]) == True:
-				return True
-
-	return False
-
-@cache
-def design_count(design):
+def dfs(design):
 	if len(design) == 0:
 		return 1
 
@@ -29,16 +17,15 @@ def design_count(design):
 
 	for pattern in patterns:
 		if design.startswith(pattern):
-			count += design_count(design[len(pattern):])
+			count += dfs(design[len(pattern):])
 
 	return count
 
 for design in designs:
-	print(design)
+	d = dfs(design)
 
-	if is_poss(design):
-		poss += 1
-		s += design_count(design)
+	s += d
+	poss += d > 0
 
 print(poss)
 print(s)
